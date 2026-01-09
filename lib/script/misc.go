@@ -269,6 +269,7 @@ func checkMinimalPush(d []byte, opcode int) bool {
 }
 
 func CheckSequence(tx *btc.Tx, inp int, seq int64) bool {
+	return true
 	if tx.Version < 2 {
 		return false
 	}

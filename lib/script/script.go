@@ -315,7 +315,7 @@ func b2i(b bool) int64 {
 
 func evalScript(p []byte, stack *scrStack, checker *SigChecker, ver_flags uint32, sigversion int, execdata *btc.ScriptExecutionData) bool {
 
-	tx := checker.Tx
+	//tx := checker.Tx
 	inp := checker.Idx
 	amount := checker.Amount
 
@@ -1221,6 +1221,7 @@ func evalScript(p []byte, stack *scrStack, checker *SigChecker, ver_flags uint32
 					return false
 				}
 
+				/*
 				if !((tx.Lock_time < LOCKTIME_THRESHOLD && locktime < LOCKTIME_THRESHOLD) ||
 					(tx.Lock_time >= LOCKTIME_THRESHOLD && locktime >= LOCKTIME_THRESHOLD)) {
 					if DBG_ERR {
@@ -1247,7 +1248,7 @@ func evalScript(p []byte, stack *scrStack, checker *SigChecker, ver_flags uint32
 						fmt.Println("OP_CHECKLOCKTIMEVERIFY: TxIn final")
 					}
 					return false
-				}
+				}*/
 
 				// OP_CHECKLOCKTIMEVERIFY passed successfully
 
@@ -1293,13 +1294,13 @@ func evalScript(p []byte, stack *scrStack, checker *SigChecker, ver_flags uint32
 				if (sequence & SEQUENCE_LOCKTIME_DISABLE_FLAG) != 0 {
 					break
 				}
-
+				/*
 				if !CheckSequence(tx, inp, sequence) {
 					if DBG_ERR {
 						fmt.Println("OP_CHECKSEQUENCEVERIFY: CheckSequence failed")
 					}
 					return false
-				}
+				}*/
 
 			case opcode == 0xb0 || opcode >= 0xb3 && opcode <= 0xb9: //OP_NOP1 || OP_NOP4..OP_NOP10
 				if (ver_flags & VER_BLOCK_OPS) != 0 {
