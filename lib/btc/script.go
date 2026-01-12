@@ -316,7 +316,7 @@ func ScriptToText(p []byte) (out []string, e error) {
 		if opcode > 0x60 {
 			opcnt++
 			if opcnt > 201 {
-				e = errors.New("ScriptToText: evalScript has too many opcodes")
+				e = errors.New("ScriptToText: EvalScript has too many opcodes")
 				return
 			}
 		}

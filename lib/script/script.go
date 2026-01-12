@@ -103,7 +103,7 @@ func VerifyTxScript(pkScr []byte, checker *SigChecker, ver_flags uint32) (result
 	}
 
 	var stack, stackCopy scrStack
-	if !evalScript(sigScr, &stack, checker, ver_flags, SIGVERSION_BASE, &execdata) {
+	if !EvalScript(sigScr, &stack, checker, ver_flags, SIGVERSION_BASE, &execdata) {
 		if DBG_ERR {
 			if tx != nil {
 				fmt.Println("VerifyTxScript", tx.Hash.String(), i+1, "/", len(tx.TxIn))
@@ -124,7 +124,7 @@ func VerifyTxScript(pkScr []byte, checker *SigChecker, ver_flags uint32) (result
 		stackCopy.copy_from(&stack)
 	}
 
-	if !evalScript(pkScr, &stack, checker, ver_flags, SIGVERSION_BASE, &execdata) {
+	if !EvalScript(pkScr, &stack, checker, ver_flags, SIGVERSION_BASE, &execdata) {
 		if DBG_SCR {
 			fmt.Println("* pkScript failed :", hex.EncodeToString(pkScr[:]))
 			fmt.Println("* VerifyTxScript", tx.Hash.String(), i+1, "/", len(tx.TxIn))
@@ -219,7 +219,7 @@ func VerifyTxScript(pkScr []byte, checker *SigChecker, ver_flags uint32) (result
 			fmt.Println("pubKey2:", hex.EncodeToString(pubKey2))
 		}
 
-		if !evalScript(pubKey2, &stack, checker, ver_flags, SIGVERSION_BASE, &execdata) {
+		if !EvalScript(pubKey2, &stack, checker, ver_flags, SIGVERSION_BASE, &execdata) {
 			if DBG_ERR {
 				fmt.Println("P2SH extra verification failed")
 			}
@@ -313,14 +313,14 @@ func b2i(b bool) int64 {
 	}
 }
 
-func evalScript(p []byte, stack *scrStack, checker *SigChecker, ver_flags uint32, sigversion int, execdata *btc.ScriptExecutionData) bool {
+func EvalScript(p []byte, stack *scrStack, checker *SigChecker, ver_flags uint32, sigversion int, execdata *btc.ScriptExecutionData) bool {
 
 	//tx := checker.Tx
 	inp := checker.Idx
 	amount := checker.Amount
 
 	if DBG_SCR {
-		fmt.Println("evalScript len", len(p), "amount", amount, "inp", inp, "flagz", ver_flags, "sigver", sigversion)
+		fmt.Println("EvalScript len", len(p), "amount", amount, "inp", inp, "flagz", ver_flags, "sigver", sigversion)
 		stack.print()
 	}
 
@@ -338,7 +338,7 @@ func evalScript(p []byte, stack *scrStack, checker *SigChecker, ver_flags uint32
 				if !ok {
 					err = fmt.Errorf("pkg: %v", r)
 				}
-				fmt.Println("evalScript panic:", err.Error())
+				fmt.Println("EvalScript panic:", err.Error())
 				fmt.Println(string(debug.Stack()))
 			}
 		}
@@ -383,7 +383,7 @@ func evalScript(p []byte, stack *scrStack, checker *SigChecker, ver_flags uint32
 				opcnt++
 				if opcnt > 201 {
 					if DBG_ERR {
-						fmt.Println("evalScript: too many opcodes A")
+						fmt.Println("EvalScript: too many opcodes A")
 					}
 					return false
 				}
@@ -413,7 +413,7 @@ func evalScript(p []byte, stack *scrStack, checker *SigChecker, ver_flags uint32
 
 		if opcode == 0xab /*OP_CODESEPARATOR*/ && sigversion == SIGVERSION_BASE && (ver_flags&VER_CONST_SCRIPTCODE) != 0 {
 			if DBG_ERR {
-				fmt.Println("evalScript: SCRIPT_ERR_OP_CODESEPARATOR")
+				fmt.Println("EvalScript: SCRIPT_ERR_OP_CODESEPARATOR")
 			}
 			return false
 		}
@@ -1066,7 +1066,7 @@ func evalScript(p []byte, stack *scrStack, checker *SigChecker, ver_flags uint32
 				opcnt += int(keyscnt)
 				if opcnt > 201 {
 					if DBG_ERR {
-						fmt.Println("evalScript: too many opcodes B")
+						fmt.Println("EvalScript: too many opcodes B")
 					}
 					return false
 				}
@@ -1222,33 +1222,33 @@ func evalScript(p []byte, stack *scrStack, checker *SigChecker, ver_flags uint32
 				}
 
 				/*
-				if !((tx.Lock_time < LOCKTIME_THRESHOLD && locktime < LOCKTIME_THRESHOLD) ||
-					(tx.Lock_time >= LOCKTIME_THRESHOLD && locktime >= LOCKTIME_THRESHOLD)) {
-					if DBG_ERR {
-						fmt.Println("OP_CHECKLOCKTIMEVERIFY: broken lock value")
+					if !((tx.Lock_time < LOCKTIME_THRESHOLD && locktime < LOCKTIME_THRESHOLD) ||
+						(tx.Lock_time >= LOCKTIME_THRESHOLD && locktime >= LOCKTIME_THRESHOLD)) {
+						if DBG_ERR {
+							fmt.Println("OP_CHECKLOCKTIMEVERIFY: broken lock value")
+						}
+						return false
 					}
-					return false
-				}
 
-				if DBG_SCR {
-					fmt.Println("locktime > int64(tx.Lock_time)", locktime, int64(tx.Lock_time))
-					fmt.Println(" ... seq", len(tx.TxIn), inp, tx.TxIn[inp].Sequence)
-				}
-
-				// Actually compare the specified lock time with the transaction.
-				if locktime > int64(tx.Lock_time) {
-					if DBG_ERR {
-						fmt.Println("OP_CHECKLOCKTIMEVERIFY: Locktime requirement not satisfied")
+					if DBG_SCR {
+						fmt.Println("locktime > int64(tx.Lock_time)", locktime, int64(tx.Lock_time))
+						fmt.Println(" ... seq", len(tx.TxIn), inp, tx.TxIn[inp].Sequence)
 					}
-					return false
-				}
 
-				if tx.TxIn[inp].Sequence == 0xffffffff {
-					if DBG_ERR {
-						fmt.Println("OP_CHECKLOCKTIMEVERIFY: TxIn final")
+					// Actually compare the specified lock time with the transaction.
+					if locktime > int64(tx.Lock_time) {
+						if DBG_ERR {
+							fmt.Println("OP_CHECKLOCKTIMEVERIFY: Locktime requirement not satisfied")
+						}
+						return false
 					}
-					return false
-				}*/
+
+					if tx.TxIn[inp].Sequence == 0xffffffff {
+						if DBG_ERR {
+							fmt.Println("OP_CHECKLOCKTIMEVERIFY: TxIn final")
+						}
+						return false
+					}*/
 
 				// OP_CHECKLOCKTIMEVERIFY passed successfully
 
@@ -1295,12 +1295,12 @@ func evalScript(p []byte, stack *scrStack, checker *SigChecker, ver_flags uint32
 					break
 				}
 				/*
-				if !CheckSequence(tx, inp, sequence) {
-					if DBG_ERR {
-						fmt.Println("OP_CHECKSEQUENCEVERIFY: CheckSequence failed")
-					}
-					return false
-				}*/
+					if !CheckSequence(tx, inp, sequence) {
+						if DBG_ERR {
+							fmt.Println("OP_CHECKSEQUENCEVERIFY: CheckSequence failed")
+						}
+						return false
+					}*/
 
 			case opcode == 0xb0 || opcode >= 0xb3 && opcode <= 0xb9: //OP_NOP1 || OP_NOP4..OP_NOP10
 				if (ver_flags & VER_BLOCK_OPS) != 0 {

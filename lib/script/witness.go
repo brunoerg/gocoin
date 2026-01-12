@@ -65,7 +65,7 @@ func (c *SigChecker) ExecuteWitnessScript(stack *scrStack, scriptPubKey []byte, 
 
 	// Run the script interpreter.
 	//DBG_SCR = true
-	if !evalScript(scriptPubKey, stack, c, flags, sigversion, execdata) {
+	if !EvalScript(scriptPubKey, stack, c, flags, sigversion, execdata) {
 		if DBG_ERR {
 			fmt.Println("eval script failed")
 		}

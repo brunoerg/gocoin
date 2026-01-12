@@ -3,6 +3,7 @@ package script
 import (
 	"encoding/hex"
 	"fmt"
+
 	"github.com/piotrnar/gocoin/lib/btc"
 )
 
@@ -63,7 +64,7 @@ func (s *scrStack) pushInt(val int64) {
 func bts2int(d []byte) (res int64) {
 	if len(d) > nMaxNumSize {
 		panic("Int on the stack is too long")
-		// Make sure this panic is captured in evalScript (cause the script to fail, not crash)
+		// Make sure this panic is captured in EvalScript (cause the script to fail, not crash)
 	}
 
 	if len(d) == 0 {
@@ -89,7 +90,7 @@ func bts2int(d []byte) (res int64) {
 func bts2int_ext(d []byte, max_bytes int, forcemin bool) (res int64) {
 	if len(d) > max_bytes {
 		panic("bts2int_ext: Int on the stack is too long")
-		// Make sure this panic is captured in evalScript (cause the script to fail, not crash)
+		// Make sure this panic is captured in EvalScript (cause the script to fail, not crash)
 	}
 
 	if len(d) == 0 {
