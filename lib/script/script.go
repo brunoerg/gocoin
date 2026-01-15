@@ -102,7 +102,7 @@ func VerifyTxScript(pkScr []byte, checker *SigChecker, ver_flags uint32) (result
 		fmt.Printf("flagz:%x\n", ver_flags)
 	}
 
-	var stack, stackCopy scrStack
+	var stack, stackCopy ScrStack
 	if !EvalScript(sigScr, &stack, checker, ver_flags, SIGVERSION_BASE, &execdata) {
 		if DBG_ERR {
 			if tx != nil {
@@ -313,7 +313,7 @@ func b2i(b bool) int64 {
 	}
 }
 
-func EvalScript(p []byte, stack *scrStack, checker *SigChecker, ver_flags uint32, sigversion int, execdata *btc.ScriptExecutionData) bool {
+func EvalScript(p []byte, stack *ScrStack, checker *SigChecker, ver_flags uint32, sigversion int, execdata *btc.ScriptExecutionData) bool {
 
 	//tx := checker.Tx
 	inp := checker.Idx
@@ -344,8 +344,8 @@ func EvalScript(p []byte, stack *scrStack, checker *SigChecker, ver_flags uint32
 		}
 	}()
 
-	var exestack scrStack
-	var altstack scrStack
+	var exestack ScrStack
+	var altstack ScrStack
 	pbegincodehash, idx, opcnt := 0, 0, 0
 	checkMinVals := (ver_flags & VER_MINDATA) != 0
 	var opcode_pos uint32

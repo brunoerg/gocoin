@@ -10,14 +10,14 @@ import (
 )
 
 type witness_ctx struct {
-	stack scrStack
+	stack ScrStack
 }
 
 func (w *witness_ctx) IsNull() bool {
 	return w.stack.size() == 0
 }
 
-func (c *SigChecker) ExecuteWitnessScript(stack *scrStack, scriptPubKey []byte, flags uint32, sigversion int, execdata *btc.ScriptExecutionData) bool {
+func (c *SigChecker) ExecuteWitnessScript(stack *ScrStack, scriptPubKey []byte, flags uint32, sigversion int, execdata *btc.ScriptExecutionData) bool {
 	if sigversion == SIGVERSION_TAPSCRIPT {
 		var pc int
 		for pc < len(scriptPubKey) {
@@ -90,7 +90,7 @@ func (c *SigChecker) ExecuteWitnessScript(stack *scrStack, scriptPubKey []byte, 
 }
 
 func (checker *SigChecker) VerifyWitnessProgram(witness *witness_ctx, witversion int, program []byte, flags uint32, is_p2sh bool) bool {
-	var stack scrStack
+	var stack ScrStack
 	var scriptPubKey []byte
 	var execdata btc.ScriptExecutionData
 

@@ -9,22 +9,22 @@ import (
 
 const nMaxNumSize = 4
 
-type scrStack struct {
+type ScrStack struct {
 	data [][]byte
 }
 
-func (s *scrStack) copy_from(x *scrStack) {
+func (s *ScrStack) copy_from(x *ScrStack) {
 	s.data = make([][]byte, len(x.data))
 	for i := range x.data {
 		s.data[i] = x.data[i]
 	}
 }
 
-func (s *scrStack) push(d []byte) {
+func (s *ScrStack) push(d []byte) {
 	s.data = append(s.data, d)
 }
 
-func (s *scrStack) pushBool(v bool) {
+func (s *ScrStack) pushBool(v bool) {
 	if v {
 		s.data = append(s.data, []byte{1})
 	} else {
@@ -32,7 +32,7 @@ func (s *scrStack) pushBool(v bool) {
 	}
 }
 
-func (s *scrStack) pushInt(val int64) {
+func (s *ScrStack) pushInt(val int64) {
 	var negative bool
 
 	if val < 0 {
@@ -150,7 +150,7 @@ func is_minimal(d []byte) bool {
 	return true
 }
 
-func (s *scrStack) popInt(check_for_min bool) int64 {
+func (s *ScrStack) popInt(check_for_min bool) int64 {
 	d := s.pop()
 	if check_for_min && !is_minimal(d) {
 		panic("Not minimal value")
@@ -158,19 +158,19 @@ func (s *scrStack) popInt(check_for_min bool) int64 {
 	return bts2int(d)
 }
 
-func (s *scrStack) popBool() bool {
+func (s *ScrStack) popBool() bool {
 	return bts2bool(s.pop())
 }
 
-func (s *scrStack) top(idx int) (d []byte) {
+func (s *ScrStack) top(idx int) (d []byte) {
 	return s.data[len(s.data)+idx]
 }
 
-func (s *scrStack) at(idx int) (d []byte) {
+func (s *ScrStack) at(idx int) (d []byte) {
 	return s.data[idx]
 }
 
-func (s *scrStack) topInt(idx int, check_for_min bool) int64 {
+func (s *ScrStack) topInt(idx int, check_for_min bool) int64 {
 	d := s.data[len(s.data)+idx]
 	if check_for_min && !is_minimal(d) {
 		panic("Not minimal value")
@@ -178,11 +178,11 @@ func (s *scrStack) topInt(idx int, check_for_min bool) int64 {
 	return bts2int(d)
 }
 
-func (s *scrStack) topBool(idx int) bool {
+func (s *ScrStack) topBool(idx int) bool {
 	return bts2bool(s.data[len(s.data)+idx])
 }
 
-func (s *scrStack) pop() (d []byte) {
+func (s *ScrStack) pop() (d []byte) {
 	l := len(s.data)
 	if l == 0 {
 		panic("stack is empty")
@@ -192,7 +192,7 @@ func (s *scrStack) pop() (d []byte) {
 	return
 }
 
-func (s *scrStack) nofalse() bool {
+func (s *ScrStack) nofalse() bool {
 	for i := range s.data {
 		if !bts2bool(s.data[i]) {
 			return false
@@ -201,22 +201,22 @@ func (s *scrStack) nofalse() bool {
 	return true
 }
 
-func (s *scrStack) size() int {
+func (s *ScrStack) size() int {
 	return len(s.data)
 }
 
-func (s *scrStack) print() {
+func (s *ScrStack) print() {
 	fmt.Println(len(s.data), "elements on stack:")
 	for i := range s.data {
 		fmt.Printf("%3d: len=%d, data:%s\n", i, len(s.data[i]), hex.EncodeToString(s.data[i]))
 	}
 }
 
-func (s *scrStack) resize(siz int) {
+func (s *ScrStack) resize(siz int) {
 	s.data = s.data[:siz]
 }
 
-func (s *scrStack) GetSerializeSize() (res int) {
+func (s *ScrStack) GetSerializeSize() (res int) {
 	res += btc.VLenSize(uint64(len(s.data)))
 	for _, d := range s.data {
 		res += btc.VLenSize(uint64(len(d)))
